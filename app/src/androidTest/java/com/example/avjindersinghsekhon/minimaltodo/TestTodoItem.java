@@ -88,6 +88,6 @@ public class TestTodoItem extends TestCase {
     }
 
     private ToDoItem getToDoItem(boolean hasReminder) {
-        return new ToDoItem(TEXT_BODY, hasReminder, CURRENT_DATE);
+        return new ToDoItem(TEXT_BODY,"", hasReminder, CURRENT_DATE, true);
     }
 }

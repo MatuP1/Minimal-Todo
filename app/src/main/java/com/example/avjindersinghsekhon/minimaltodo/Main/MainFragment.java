@@ -23,6 +23,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -148,9 +150,11 @@ public class MainFragment extends AppDefaultFragment {
             public void onClick(View v) {
                 app.send(this, "Action", "FAB pressed");
                 Intent newTodo = new Intent(getContext(), AddToDoActivity.class);
-                ToDoItem item = new ToDoItem("","", false, null);
+                ToDoItem item = new ToDoItem("","", false, null, false);
                 int color = ColorGenerator.MATERIAL.getRandomColor();
                 item.setTodoColor(color);
+
+
                 //noinspection ResourceType
 //                String color = getResources().getString(R.color.primary_ligher);
                 newTodo.putExtra(TODOITEM, item);
@@ -179,7 +183,23 @@ public class MainFragment extends AppDefaultFragment {
                 startActivityForResult(newTodo, REQUEST_ID_TODO_ITEM);
             }
         });
+         final ToDoItem mUserToDoItem = (ToDoItem) this.getActivity().getIntent().getSerializableExtra(MainFragment.TODOITEM);
+        if(mUserToDoItem != null){
+        CheckBox mCheckBox = (CheckBox) view.findViewById(R.id.checkBox);
+        mCheckBox.setChecked(mUserToDoItem.isChecked());
+        /*TODO checkbox
+         *
+         * recuperar checkbox, su estado y reaccionar en consecuencia
+         * * */
+        //checkbox listener
+        mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                mUserToDoItem.setChecked(!mUserToDoItem.isChecked());
+            }
+        });
 
+        }
 
 //        mRecyclerView = (RecyclerView)findViewById(R.id.toDoRecyclerView);
         mRecyclerView = (RecyclerViewEmptySupport) view.findViewById(R.id.toDoRecyclerView);
@@ -424,7 +444,7 @@ public class MainFragment extends AppDefaultFragment {
 
     public void makeUpItems(ArrayList<ToDoItem> items, int len) {
         for (String testString : testStrings) {
-            ToDoItem item = new ToDoItem(testString,testString, false, new Date());
+            ToDoItem item = new ToDoItem(testString,testString, false, new Date(), false);
             //noinspection ResourceType
 //            item.setTodoColor(getResources().getString(R.color.red_secondary));
             items.add(item);

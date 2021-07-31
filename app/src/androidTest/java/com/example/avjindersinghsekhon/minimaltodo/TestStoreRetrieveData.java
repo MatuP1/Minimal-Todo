@@ -52,8 +52,10 @@ public class TestStoreRetrieveData extends ActivityUnitTestCase<MainActivity> {
         for (int i = 1; i < 11; i++) {
             mTestData.add(new ToDoItem(
                     "item" + i,
+                    "",
                     false,
-                    new Date()));
+                    new Date(),
+                    false));
         }
     }
 

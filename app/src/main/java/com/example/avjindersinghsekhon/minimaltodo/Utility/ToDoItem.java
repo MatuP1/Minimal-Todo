@@ -16,6 +16,10 @@ public class ToDoItem implements Serializable {
     private int mTodoColor;
     private Date mToDoDate;
     private UUID mTodoIdentifier;
+
+
+
+    private boolean mTodoChecked = false;
     //add description
     private static final String TODODESCRIPTION = "tododescription";
     private static final String TODOTEXT = "todotext";
@@ -24,14 +28,17 @@ public class ToDoItem implements Serializable {
     private static final String TODOCOLOR = "todocolor";
     private static final String TODODATE = "tododate";
     private static final String TODOIDENTIFIER = "todoidentifier";
+    private static final String TODOCHECKED = "todochecked";
 
+    /*TODO add isChecked para poder usarlo desde las demas clases y saber si esta checkeado*/
 
-    public ToDoItem(String todoBody,String tododescription,  boolean hasReminder, Date toDoDate) {
+    public ToDoItem(String todoBody,String tododescription,  boolean hasReminder, Date toDoDate, Boolean isChecked) {
         mToDoText = todoBody;
         mHasReminder = hasReminder;
         mToDoDate = toDoDate;
         mToDoDescription = tododescription;
         mTodoColor = 1677725;
+        mTodoChecked = isChecked;
         mTodoIdentifier = UUID.randomUUID();
     }
 
@@ -40,7 +47,7 @@ public class ToDoItem implements Serializable {
         mToDoDescription = jsonObject.getString(TODODESCRIPTION);
         mHasReminder = jsonObject.getBoolean(TODOREMINDER);
         mTodoColor = jsonObject.getInt(TODOCOLOR);
-
+        mTodoChecked = jsonObject.getBoolean(TODOCHECKED);
         mTodoIdentifier = UUID.fromString(jsonObject.getString(TODOIDENTIFIER));
 
 //        if(jsonObject.has(TODOLASTEDITED)){
@@ -56,6 +63,7 @@ public class ToDoItem implements Serializable {
         jsonObject.put(TODOTEXT, mToDoText);
         jsonObject.put(TODOREMINDER, mHasReminder);
         jsonObject.put(TODODESCRIPTION, mToDoDescription);
+        jsonObject.put(TODOCHECKED,mTodoChecked);
 //        jsonObject.put(TODOLASTEDITED, mLastEdited.getTime());
         if (mToDoDate != null) {
             jsonObject.put(TODODATE, mToDoDate.getTime());
@@ -68,7 +76,7 @@ public class ToDoItem implements Serializable {
 
 
     public ToDoItem() {
-        this("Clean my room","Sweep and Mop my Room", true, new Date());
+        this("Clean my room","Sweep and Mop my Room", true, new Date(), false);
     }
 
     public String getmToDoDescription() { return mToDoDescription;}
@@ -111,5 +119,9 @@ public class ToDoItem implements Serializable {
     public UUID getIdentifier() {
         return mTodoIdentifier;
     }
+
+    public boolean isChecked() { return mTodoChecked; }
+
+    public void setChecked(boolean checked) { mTodoChecked = checked; }
 }
 

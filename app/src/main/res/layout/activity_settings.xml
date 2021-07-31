@@ -6,14 +6,14 @@
     android:layout_width="match_parent"
     >
 
-    <android.support.v7.widget.Toolbar xmlns:tools="http://schemas.android.com/tools"
-                                       tools:ignore="MissingPrefix"
-                                       xmlns:android="http://schemas.android.com/apk/res/android"
-                                       android:id="@+id/toolbar"
-                                       android:minHeight="?attr/actionBarSize"
-                                       android:background="?attr/colorPrimary"
-                                       android:layout_width="match_parent"
-                                       android:layout_height="wrap_content">
+    <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        tools:ignore="MissingPrefix">
 
 
     </android.support.v7.widget.Toolbar>

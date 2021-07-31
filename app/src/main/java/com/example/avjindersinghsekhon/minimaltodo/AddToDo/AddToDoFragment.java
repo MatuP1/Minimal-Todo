@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -61,6 +62,7 @@ public class AddToDoFragment extends AppDefaultFragment implements DatePickerDia
     //    private TextView mLastSeenTextView;
     private LinearLayout mUserDateSpinnerContainingLinearLayout;
     private TextView mReminderTextView;
+    //private CheckBox mToDoCheckbox;
 
     private String CombinationText;
 
@@ -73,6 +75,7 @@ public class AddToDoFragment extends AppDefaultFragment implements DatePickerDia
     private Button mChooseTimeButton;
     private Button mCopyClipboard;
 
+
     private ToDoItem mUserToDoItem;
     private FloatingActionButton mToDoSendFloatingActionButton;
     public static final String DATE_FORMAT = "MMM d, yyyy";
@@ -82,6 +85,7 @@ public class AddToDoFragment extends AppDefaultFragment implements DatePickerDia
     private String mUserEnteredText;
     private String mUserEnteredDescription;
     private boolean mUserHasReminder;
+   // private boolean mUserChecked;
     private Toolbar mToolbar;
     private Date mUserReminderDate;
     private int mUserColor;
@@ -135,6 +139,9 @@ public class AddToDoFragment extends AppDefaultFragment implements DatePickerDia
         mUserHasReminder = mUserToDoItem.hasReminder();
         mUserReminderDate = mUserToDoItem.getToDoDate();
         mUserColor = mUserToDoItem.getTodoColor();
+       // mUserChecked = mUserToDoItem.isChecked();
+
+
 
 
 //        if(mUserToDoItem.getLastEdited()==null) {
@@ -145,12 +152,15 @@ public class AddToDoFragment extends AppDefaultFragment implements DatePickerDia
 //        }
 
 
+
+
         reminderIconImageButton = (ImageButton) view.findViewById(R.id.userToDoReminderIconImageButton);
         reminderRemindMeTextView = (TextView) view.findViewById(R.id.userToDoRemindMeTextView);
         if (theme.equals(MainFragment.DARKTHEME)) {
             reminderIconImageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_alarm_add_white_24dp));
             reminderRemindMeTextView.setTextColor(Color.WHITE);
         }
+
 
 
 
@@ -165,7 +175,7 @@ public class AddToDoFragment extends AppDefaultFragment implements DatePickerDia
 //        mLastSeenTextView = (TextView)findViewById(R.id.toDoLastEditedTextView);
         mToDoSendFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.makeToDoFloatingActionButton);
         mReminderTextView = (TextView) view.findViewById(R.id.newToDoDateTimeReminderTextView);
-
+       // mToDoCheckbox = (CheckBox) view.findViewById(R.id.checkBox);
 
         //OnClickListener for CopyClipboard Button
         mCopyClipboard.setOnClickListener(new View.OnClickListener() {
@@ -185,7 +195,6 @@ public class AddToDoFragment extends AppDefaultFragment implements DatePickerDia
 
 
 
-
         mContainerLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -194,7 +203,7 @@ public class AddToDoFragment extends AppDefaultFragment implements DatePickerDia
             }
         });
 
-
+       // mToDoCheckbox.setChecked(mUserChecked);
         if (mUserHasReminder && (mUserReminderDate != null)) {
 //            mUserDateSpinnerContainingLinearLayout.setVisibility(View.VISIBLE);
             setReminderTextView();
@@ -204,6 +213,7 @@ public class AddToDoFragment extends AppDefaultFragment implements DatePickerDia
             mToDoDateSwitch.setChecked(false);
             mReminderTextView.setVisibility(View.INVISIBLE);
         }
+
 
 //        TextInputLayout til = (TextInputLayout)findViewById(R.id.toDoCustomTextInput);
 //        til.requestFocus();
@@ -298,7 +308,8 @@ public class AddToDoFragment extends AppDefaultFragment implements DatePickerDia
 
         mDateEditText = (EditText) view.findViewById(R.id.newTodoDateEditText);
         mTimeEditText = (EditText) view.findViewById(R.id.newTodoTimeEditText);
-
+        /* TODO arreglar bug al cambiar de dia y volver al dia de hoy
+        * */
         mDateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
