@@ -3,15 +3,21 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/proyectos_web/Minimal-Todo/app/src/main/res/layout-v21/fragment_main.xml" value="0.20520833333333333" />
         <entry key="..\:/proyectos_web/Minimal-Todo/app/src/main/res/layout/activity_add_to_do.xml" value="0.27447916666666666" />
         <entry key="..\:/proyectos_web/Minimal-Todo/app/src/main/res/layout/activity_main.xml" value="0.36666666666666664" />
         <entry key="..\:/proyectos_web/Minimal-Todo/app/src/main/res/layout/activity_settings.xml" value="0.2015625" />
+        <entry key="..\:/proyectos_web/Minimal-Todo/app/src/main/res/layout/activity_tabs.xml" value="0.36666666666666664" />
         <entry key="..\:/proyectos_web/Minimal-Todo/app/src/main/res/layout/activity_view_pager_main.xml" value="0.36666666666666664" />
-        <entry key="..\:/proyectos_web/Minimal-Todo/app/src/main/res/layout/fragment_add_to_do.xml" value="0.27447916666666666" />
+        <entry key="..\:/proyectos_web/Minimal-Todo/app/src/main/res/layout/base_toolbar.xml" value="0.20520833333333333" />
+        <entry key="..\:/proyectos_web/Minimal-Todo/app/src/main/res/layout/fragment_add_to_do.xml" value="0.33" />
+        <entry key="..\:/proyectos_web/Minimal-Todo/app/src/main/res/layout/fragment_add_to_do_list.xml" value="0.20520833333333333" />
         <entry key="..\:/proyectos_web/Minimal-Todo/app/src/main/res/layout/fragment_main.xml" value="0.36666666666666664" />
+        <entry key="..\:/proyectos_web/Minimal-Todo/app/src/main/res/layout/fragment_reminder.xml" value="0.36666666666666664" />
         <entry key="..\:/proyectos_web/Minimal-Todo/app/src/main/res/layout/layout_fragment_container.xml" value="0.36666666666666664" />
         <entry key="..\:/proyectos_web/Minimal-Todo/app/src/main/res/layout/list_circle_try.xml" value="0.27447916666666666" />
         <entry key="..\:/proyectos_web/Minimal-Todo/app/src/main/res/layout/list_item_view_future.xml" value="0.27447916666666666" />
+        <entry key="..\:/proyectos_web/Minimal-Todo/app/src/main/res/layout/reminder_layout.xml" value="0.36666666666666664" />
       </map>
     </option>
   </component>

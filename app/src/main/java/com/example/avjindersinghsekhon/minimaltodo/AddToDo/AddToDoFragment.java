@@ -85,7 +85,7 @@ public class AddToDoFragment extends AppDefaultFragment implements DatePickerDia
     private String mUserEnteredText;
     private String mUserEnteredDescription;
     private boolean mUserHasReminder;
-   // private boolean mUserChecked;
+    private boolean mUserChecked;
     private Toolbar mToolbar;
     private Date mUserReminderDate;
     private int mUserColor;
@@ -139,7 +139,7 @@ public class AddToDoFragment extends AppDefaultFragment implements DatePickerDia
         mUserHasReminder = mUserToDoItem.hasReminder();
         mUserReminderDate = mUserToDoItem.getToDoDate();
         mUserColor = mUserToDoItem.getTodoColor();
-       // mUserChecked = mUserToDoItem.isChecked();
+        mUserChecked = mUserToDoItem.isChecked();
 
 
 

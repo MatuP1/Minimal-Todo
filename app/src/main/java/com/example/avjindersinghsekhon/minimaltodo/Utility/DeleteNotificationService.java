@@ -14,6 +14,7 @@ public class DeleteNotificationService extends IntentService {
     private StoreRetrieveData storeRetrieveData;
     private ArrayList<ToDoItem> mToDoItems;
     private ToDoItem mItem;
+    private UUID todoID;
 
     public DeleteNotificationService() {
         super("DeleteNotificationService");
@@ -22,7 +23,7 @@ public class DeleteNotificationService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         storeRetrieveData = new StoreRetrieveData(this, MainFragment.FILENAME);
-        UUID todoID = (UUID) intent.getSerializableExtra(TodoNotificationService.TODOUUID);
+        todoID = (UUID) intent.getSerializableExtra(TodoNotificationService.TODOUUID);
 
         mToDoItems = loadData();
         if (mToDoItems != null) {
@@ -52,7 +53,7 @@ public class DeleteNotificationService extends IntentService {
 
     private void saveData() {
         try {
-            storeRetrieveData.saveToFile(mToDoItems);
+            storeRetrieveData.saveToFile(mToDoItems, todoID);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -66,7 +67,7 @@ public class DeleteNotificationService extends IntentService {
 
     private ArrayList<ToDoItem> loadData() {
         try {
-            return storeRetrieveData.loadFromFile();
+            return storeRetrieveData.getArrayListFromId(todoID);
         } catch (Exception e) {
             e.printStackTrace();
         }

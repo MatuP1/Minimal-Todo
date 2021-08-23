@@ -123,5 +123,18 @@ public class ToDoItem implements Serializable {
     public boolean isChecked() { return mTodoChecked; }
 
     public void setChecked(boolean checked) { mTodoChecked = checked; }
+
+    @Override
+    public String toString() {
+        return "ToDoItem{" +
+                "mToDoText='" + mToDoText + '\'' +
+                ", mHasReminder=" + mHasReminder +
+                ", mToDoDescription='" + mToDoDescription + '\'' +
+                ", mTodoColor=" + mTodoColor +
+                ", mToDoDate=" + mToDoDate +
+                ", mTodoIdentifier=" + mTodoIdentifier +
+                ", mTodoChecked=" + mTodoChecked +
+                '}';
+    }
 }
 

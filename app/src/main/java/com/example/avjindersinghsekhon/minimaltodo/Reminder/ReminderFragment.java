@@ -46,6 +46,7 @@ public class ReminderFragment extends AppDefaultFragment {
     private ToDoItem mItem;
     public static final String EXIT = "com.avjindersekhon.exit";
     private TextView mSnoozeTextView;
+    private UUID id;
     String theme;
     AnalyticsApplication app;
 
@@ -62,13 +63,14 @@ public class ReminderFragment extends AppDefaultFragment {
             getActivity().setTheme(R.style.CustomStyle_DarkTheme);
         }
         storeRetrieveData = new StoreRetrieveData(getContext(), MainFragment.FILENAME);
-        mToDoItems = MainFragment.getLocallyStoredData(storeRetrieveData);
+
 
         ((AppCompatActivity) getActivity()).setSupportActionBar((Toolbar) view.findViewById(R.id.toolbar));
 
 
         Intent i = getActivity().getIntent();
-        UUID id = (UUID) i.getSerializableExtra(TodoNotificationService.TODOUUID);
+        id = (UUID) i.getSerializableExtra(TodoNotificationService.TODOUUID);
+        mToDoItems = storeRetrieveData.getArrayListFromId(id);
         mItem = null;
         for (ToDoItem toDoItem : mToDoItems) {
             if (toDoItem.getIdentifier().equals(id)) {
@@ -192,7 +194,7 @@ public class ReminderFragment extends AppDefaultFragment {
 
     private void saveData() {
         try {
-            storeRetrieveData.saveToFile(mToDoItems);
+            storeRetrieveData.saveToFile(mToDoItems, id);
         } catch (JSONException | IOException e) {
             e.printStackTrace();
         }

@@ -32,6 +32,10 @@
             android:screenOrientation="portrait"
             android:parentActivityName=".Main.MainActivity"
             />
+        <activity android:name=".AddToDo.AddToDoListActivity"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".Main.MainActivity"
+            />
 
         <activity android:name=".About.AboutActivity"
             android:label="@string/app_name"

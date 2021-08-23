@@ -46,6 +46,7 @@ public class ItemTouchHelperClass extends ItemTouchHelper.Callback {
 
     }
 
+
 //    @SuppressWarnings("deprecation")
 //    @Override
 //    public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {

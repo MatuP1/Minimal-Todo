@@ -4,12 +4,24 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.example.avjindersinghsekhon.minimaltodo.Main.MainFragment;
+import com.example.avjindersinghsekhon.minimaltodo.R;
 
-public class ScreenSlidePageAdapter extends FragmentPagerAdapter {
+import java.util.ArrayList;
+import java.util.List;
+
+public class ScreenSlidePageAdapter extends FragmentStatePagerAdapter {
     private Context mContext;
     private final int NUM_PAGES = 4;
+    private final List<Fragment> listaDeFragmentos = new ArrayList<>();
+    private final List<String> listaDeTitulosDeFragmentos = new ArrayList<>();
+
+    public ScreenSlidePageAdapter(FragmentManager fm) {
+        super(fm);
+
+    }
     public ScreenSlidePageAdapter(FragmentManager fm, Context c) {
         super(fm);
         mContext = c;
@@ -17,16 +29,26 @@ public class ScreenSlidePageAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return "";
+        if (position >= getCount() - 1) return null;
+        return listaDeTitulosDeFragmentos.get(position);
     }
 
     @Override
-    public Fragment getItem(int position) {
-        return new MainFragment();
-    }
+    public Fragment getItem(int position) { return listaDeFragmentos.get(position);  }
 
     @Override
     public int getCount() {
-        return NUM_PAGES;
+        return listaDeFragmentos.size();
     }
+
+    public void agregarFragmento(Fragment fragment, String title) {
+        listaDeFragmentos.add(fragment);
+        listaDeTitulosDeFragmentos.add(title);
+        notifyDataSetChanged();
+    }
+
+    public List<String> getListaDeTitulosDeFragmentos() {
+        return listaDeTitulosDeFragmentos;
+    }
+
 }

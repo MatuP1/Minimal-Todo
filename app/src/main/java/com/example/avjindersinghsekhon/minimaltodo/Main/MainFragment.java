@@ -1,5 +1,6 @@
 package com.example.avjindersinghsekhon.minimaltodo.Main;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -7,10 +8,14 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,12 +33,14 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.example.avjindersinghsekhon.minimaltodo.About.AboutActivity;
 import com.example.avjindersinghsekhon.minimaltodo.AddToDo.AddToDoActivity;
 import com.example.avjindersinghsekhon.minimaltodo.AddToDo.AddToDoFragment;
+import com.example.avjindersinghsekhon.minimaltodo.AddToDo.AddToDoListActivity;
 import com.example.avjindersinghsekhon.minimaltodo.Analytics.AnalyticsApplication;
 import com.example.avjindersinghsekhon.minimaltodo.AppDefault.AppDefaultFragment;
 import com.example.avjindersinghsekhon.minimaltodo.R;
@@ -41,6 +48,7 @@ import com.example.avjindersinghsekhon.minimaltodo.Reminder.ReminderFragment;
 import com.example.avjindersinghsekhon.minimaltodo.Settings.SettingsActivity;
 import com.example.avjindersinghsekhon.minimaltodo.Utility.ItemTouchHelperClass;
 import com.example.avjindersinghsekhon.minimaltodo.Utility.RecyclerViewEmptySupport;
+import com.example.avjindersinghsekhon.minimaltodo.Utility.ScreenSlidePageAdapter;
 import com.example.avjindersinghsekhon.minimaltodo.Utility.StoreRetrieveData;
 import com.example.avjindersinghsekhon.minimaltodo.Utility.ToDoItem;
 import com.example.avjindersinghsekhon.minimaltodo.Utility.TodoNotificationService;
@@ -48,6 +56,7 @@ import com.example.avjindersinghsekhon.minimaltodo.Utility.TodoNotificationServi
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -57,19 +66,25 @@ import static android.content.Context.ALARM_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
 
 public class MainFragment extends AppDefaultFragment {
+    public static final String TODOLIST = "com.avjindersinghsekhon.com.avjindersinghsekhon.minimaltodo.AddToDoListFragment" ;
+    private static ScreenSlidePageAdapter adapterTab;
+    private int position;
     private RecyclerViewEmptySupport mRecyclerView;
     private FloatingActionButton mAddToDoItemFAB;
-    private ArrayList<ToDoItem> mToDoItemsArrayList;
+    private FloatingActionButton mAddToDoListFAB;
+    private boolean isFAMenuOpen = false;
+    private String titulo = "";
+    private ArrayList<ToDoItem> mToDoItemsArrayList = new ArrayList<ToDoItem>();
     private CoordinatorLayout mCoordLayout;
     public static final String TODOITEM = "com.avjindersinghsekhon.com.avjindersinghsekhon.minimaltodo.MainActivity";
     private MainFragment.BasicListAdapter adapter;
-    private static final int REQUEST_ID_TODO_ITEM = 100;
+    public static final int REQUEST_ID_TODO_ITEM = 100;
+    public static final int REQUEST_ID_TODO_LIST = 101;
     private ToDoItem mJustDeletedToDoItem;
     private int mIndexOfDeletedToDoItem;
     public static final String DATE_TIME_FORMAT_12_HOUR = "MMM d, yyyy  h:mm a";
     public static final String DATE_TIME_FORMAT_24_HOUR = "MMM d, yyyy  k:mm";
     public static final String FILENAME = "todoitems.json";
-    private StoreRetrieveData storeRetrieveData;
     public ItemTouchHelper itemTouchHelper;
     private CustomRecyclerScrollViewListener customRecyclerScrollViewListener;
     public static final String SHARED_PREF_DATA_SET_CHANGED = "com.avjindersekhon.datasetchanged";
@@ -87,8 +102,12 @@ public class MainFragment extends AppDefaultFragment {
             "Get car washed",
             "Get my dry cleaning"
     };
-
-
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        if(getArguments()!=null)
+            position = getArguments().getInt("p");
+    }
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -106,17 +125,22 @@ public class MainFragment extends AppDefaultFragment {
         }
         this.getActivity().setTheme(mTheme);
 
-        super.onCreate(savedInstanceState);
+       // super.onCreate(savedInstanceState);
 
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF_DATA_SET_CHANGED, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(CHANGE_OCCURED, false);
         editor.apply();
-
-        storeRetrieveData = new StoreRetrieveData(getContext(), FILENAME);
-        mToDoItemsArrayList = getLocallyStoredData(storeRetrieveData);
-        adapter = new MainFragment.BasicListAdapter(mToDoItemsArrayList);
+        StoreRetrieveData storeRetrieveData = new StoreRetrieveData(getContext(), MainFragment.FILENAME);
+        try {
+            mToDoItemsArrayList = storeRetrieveData.loadFromFile(position);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        adapter = new BasicListAdapter(mToDoItemsArrayList);
         setAlarms();
 
 
@@ -139,10 +163,11 @@ public class MainFragment extends AppDefaultFragment {
 //        mToDoItemsArrayList = new ArrayList<>();
 //        makeUpItems(mToDoItemsArrayList, testStrings.length);
 
-
         mCoordLayout = (CoordinatorLayout) view.findViewById(R.id.myCoordinatorLayout);
-        mAddToDoItemFAB = (FloatingActionButton) view.findViewById(R.id.addToDoItemFAB);
 
+        FloatingActionButton mAddToDoFAMenu = (FloatingActionButton) view.findViewById(R.id.addToDoFAMenu);
+        mAddToDoListFAB = (FloatingActionButton) view.findViewById(R.id.addToDoListFAB);
+        mAddToDoItemFAB = (FloatingActionButton) view.findViewById(R.id.addToDoFAB);
         mAddToDoItemFAB.setOnClickListener(new View.OnClickListener() {
 
             @SuppressWarnings("deprecation")
@@ -150,7 +175,7 @@ public class MainFragment extends AppDefaultFragment {
             public void onClick(View v) {
                 app.send(this, "Action", "FAB pressed");
                 Intent newTodo = new Intent(getContext(), AddToDoActivity.class);
-                ToDoItem item = new ToDoItem("","", false, null, false);
+                ToDoItem item = new ToDoItem("", "", false, null, false);
                 int color = ColorGenerator.MATERIAL.getRandomColor();
                 item.setTodoColor(color);
 
@@ -180,26 +205,35 @@ public class MainFragment extends AppDefaultFragment {
 //                startActivity(new Intent(MainActivity.this, TestLayout.class), options.toBundle());
 //                startActivityForResult(newTodo, REQUEST_ID_TODO_ITEM, options.toBundle());
 
-                startActivityForResult(newTodo, REQUEST_ID_TODO_ITEM);
-            }
-        });
-         final ToDoItem mUserToDoItem = (ToDoItem) this.getActivity().getIntent().getSerializableExtra(MainFragment.TODOITEM);
-        if(mUserToDoItem != null){
-        CheckBox mCheckBox = (CheckBox) view.findViewById(R.id.checkBox);
-        mCheckBox.setChecked(mUserToDoItem.isChecked());
-        /*TODO checkbox
-         *
-         * recuperar checkbox, su estado y reaccionar en consecuencia
-         * * */
-        //checkbox listener
-        mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                mUserToDoItem.setChecked(!mUserToDoItem.isChecked());
+                getActivity().startActivityForResult(newTodo, REQUEST_ID_TODO_ITEM);
             }
         });
 
-        }
+        mAddToDoListFAB.setOnClickListener(new View.OnClickListener() {
+
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onClick(View v) {
+                app.send(this, "Action", "FAB pressed");
+                Intent newList = new Intent(getContext(), AddToDoListActivity.class);
+
+                getActivity().startActivityForResult(newList, REQUEST_ID_TODO_LIST);
+            }
+        });
+
+        mAddToDoFAMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!isFAMenuOpen) {
+                    showFABMenu();
+                } else {
+                    closeFABMenu();
+                }
+            }
+        });
+
+        final ToDoItem mUserToDoItem = (ToDoItem) this.getActivity().getIntent().getSerializableExtra(MainFragment.TODOITEM);
+
 
 //        mRecyclerView = (RecyclerView)findViewById(R.id.toDoRecyclerView);
         mRecyclerView = (RecyclerViewEmptySupport) view.findViewById(R.id.toDoRecyclerView);
@@ -209,7 +243,9 @@ public class MainFragment extends AppDefaultFragment {
         mRecyclerView.setEmptyView(view.findViewById(R.id.toDoEmptyView));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
 
 
         customRecyclerScrollViewListener = new CustomRecyclerScrollViewListener() {
@@ -239,26 +275,24 @@ public class MainFragment extends AppDefaultFragment {
         mRecyclerView.setAdapter(adapter);
 //        setUpTransitions();
 
-
+    }
+    private void showFABMenu(){
+        isFAMenuOpen=true;
+        mAddToDoItemFAB.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
+        mAddToDoListFAB.animate().translationY(-getResources().getDimension(R.dimen.standard_75));
     }
 
-    public static ArrayList<ToDoItem> getLocallyStoredData(StoreRetrieveData storeRetrieveData) {
-        ArrayList<ToDoItem> items = null;
-
-        try {
-            items = storeRetrieveData.loadFromFile();
-
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-
-        if (items == null) {
-            items = new ArrayList<>();
-        }
-        return items;
-
+    private void closeFABMenu(){
+        isFAMenuOpen=false;
+        mAddToDoItemFAB.animate().translationY(0);
+        mAddToDoListFAB.animate().translationY(0);
     }
 
+     public void setmToDoItemsArrayList (ArrayList<ToDoItem> i){
+        mToDoItemsArrayList = i;
+        adapter.setItems(i);
+        setAlarms();
+     }
     @Override
     public void onResume() {
         super.onResume();
@@ -298,11 +332,6 @@ public class MainFragment extends AppDefaultFragment {
         super.onStart();
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF_DATA_SET_CHANGED, MODE_PRIVATE);
         if (sharedPreferences.getBoolean(CHANGE_OCCURED, false)) {
-
-            mToDoItemsArrayList = getLocallyStoredData(storeRetrieveData);
-            adapter = new MainFragment.BasicListAdapter(mToDoItemsArrayList);
-            mRecyclerView.setAdapter(adapter);
-            setAlarms();
 
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean(CHANGE_OCCURED, false);
@@ -379,7 +408,9 @@ public class MainFragment extends AppDefaultFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != RESULT_CANCELED && requestCode == REQUEST_ID_TODO_ITEM) {
+        super.onActivityResult(requestCode,resultCode,data);
+        if (resultCode != RESULT_CANCELED)
+            if(requestCode == REQUEST_ID_TODO_ITEM) {
             ToDoItem item = (ToDoItem) data.getSerializableExtra(TODOITEM);
             if (item.getToDoText().length() <= 0) {
                 return;
@@ -405,11 +436,18 @@ public class MainFragment extends AppDefaultFragment {
             if (!existed) {
                 addToDataStore(item);
             }
-
+            saveData();
 
         }
     }
-
+    private void saveData(){
+        StoreRetrieveData storeRetrieveData = new StoreRetrieveData(getContext(), MainFragment.FILENAME);
+        try {
+            storeRetrieveData.saveToFile(mToDoItemsArrayList, position);
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
+    }
     private AlarmManager getAlarmManager() {
         return (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
     }
@@ -438,7 +476,6 @@ public class MainFragment extends AppDefaultFragment {
     private void addToDataStore(ToDoItem item) {
         mToDoItemsArrayList.add(item);
         adapter.notifyItemInserted(mToDoItemsArrayList.size() - 1);
-
     }
 
 
@@ -451,6 +488,7 @@ public class MainFragment extends AppDefaultFragment {
         }
 
     }
+
 
     public class BasicListAdapter extends RecyclerView.Adapter<BasicListAdapter.ViewHolder> implements ItemTouchHelperClass.ItemTouchHelperAdapter {
         private ArrayList<ToDoItem> items;
@@ -565,7 +603,7 @@ public class MainFragment extends AppDefaultFragment {
                 }
                 holder.mTimeTextView.setText(timeToShow);
             }
-
+            holder.mCheckBox.setChecked(item.isChecked());
 
         }
 
@@ -576,9 +614,16 @@ public class MainFragment extends AppDefaultFragment {
 
         BasicListAdapter(ArrayList<ToDoItem> items) {
 
-            this.items = items;
+        this.items = items;
+
         }
 
+        public void setItems(ArrayList<ToDoItem> items) {
+            this.items = items;
+            notifyDataSetChanged();
+
+
+        }
 
         @SuppressWarnings("deprecation")
         public class ViewHolder extends RecyclerView.ViewHolder {
@@ -589,6 +634,7 @@ public class MainFragment extends AppDefaultFragment {
             //            TextView mColorTextView;
             ImageView mColorImageView;
             TextView mTimeTextView;
+            CheckBox mCheckBox;
 //            int color = -1;
 
             public ViewHolder(View v) {
@@ -600,6 +646,7 @@ public class MainFragment extends AppDefaultFragment {
                         ToDoItem item = items.get(ViewHolder.this.getAdapterPosition());
                         Intent i = new Intent(getContext(), AddToDoActivity.class);
                         i.putExtra(TODOITEM, item);
+
                         startActivityForResult(i, REQUEST_ID_TODO_ITEM);
                     }
                 });
@@ -608,6 +655,24 @@ public class MainFragment extends AppDefaultFragment {
 //                mColorTextView = (TextView)v.findViewById(R.id.toDoColorTextView);
                 mColorImageView = (ImageView) v.findViewById(R.id.toDoListItemColorImageView);
                 linearLayout = (LinearLayout) v.findViewById(R.id.listItemLinearLayout);
+                mCheckBox = (CheckBox) v.findViewById(R.id.checkBox);
+                /*TODO checkbox
+                     *
+                     * recuperar checkbox, su estado y reaccionar en consecuencia
+                     * * */
+                    //checkbox listener
+                    mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                            //mUserToDoItem.setChecked(!mUserToDoItem.isChecked());
+                            ToDoItem item = items.get(ViewHolder.this.getAdapterPosition());
+                            if(mCheckBox.isChecked())
+                                item.setChecked(true);
+                            Log.e("Items:",mToDoItemsArrayList.toString());
+                        }
+                    });
+
+
             }
 
 
@@ -619,25 +684,6 @@ public class MainFragment extends AppDefaultFragment {
 //    protected void attachBaseContext(Context newBase) {
 //        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
 //    }
-
-    private void saveDate() {
-        try {
-            storeRetrieveData.saveToFile(mToDoItemsArrayList);
-        } catch (JSONException | IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        try {
-            storeRetrieveData.saveToFile(mToDoItemsArrayList);
-        } catch (JSONException | IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 
     @Override
@@ -671,5 +717,13 @@ public class MainFragment extends AppDefaultFragment {
 
     public static MainFragment newInstance() {
         return new MainFragment();
+    }
+
+    public static MainFragment newInstance(int p) {
+        MainFragment ret = new MainFragment();
+        Bundle b = new Bundle(1);
+        b.putInt("p",p);
+        ret.setArguments(b);
+        return ret;
     }
 }
